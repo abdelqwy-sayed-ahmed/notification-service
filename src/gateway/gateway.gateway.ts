@@ -44,10 +44,8 @@ export class NotificationGateway
     const userId = Number(client.handshake.query.userId);
     const tenantId = client.handshake.query.tenantId as string;
 
-    if (!userId || !tenantId) {
-      console.warn(
-        `Client ${client.id} missing userId or tenantId — disconnecting`,
-      );
+    if (userId === 0 || !tenantId) {
+      console.error(` missing userId or tenantId — disconnecting`);
       client.disconnect();
       return;
     }
@@ -60,7 +58,7 @@ export class NotificationGateway
     await this.redisService.setUserOnline(tenantId, userId, client.id);
 
     console.log(
-      `User ${userId} (tenant: ${tenantId}) connected [${client.id}]`,
+      ` socket connection :User ${userId} (tenant: ${tenantId}) connected [${client.id}]`,
     );
   }
 

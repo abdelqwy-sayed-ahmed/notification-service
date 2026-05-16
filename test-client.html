@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket Test Client</title>
+  <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    #log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; background: #f9f9f9; }
+    .received { color: green; }
+    .sent { color: blue; }
+    .system { color: gray; }
+    input, button { margin: 4px; padding: 6px; }
+  </style>
+</head>
+<body>
+  <h3>Notification Test Client</h3>
+
+  <div>
+    <input id="userId" placeholder="userId (1 or 2)" value="1" />
+    <input id="tenantId" placeholder="tenantId" value="tenant1" />
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+  </div>
+
+  <div>
+    <input id="roomId" placeholder="roomId" value="5" />
+    <button onclick="joinRoom()">Join Room</button>
+    <button onclick="leaveRoom()">Leave Room</button>
+  </div>
+
+  <div id="log"></div>
+
+  <script>
+    let socket;
+
+    function log(msg, cls = 'system') {
+      const div = document.getElementById('log');
+      div.innerHTML += `<div class="${cls}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      div.scrollTop = div.scrollHeight;
+    }
+
+    function connect() {
+      const userId = document.getElementById('userId').value;
+      const tenantId = document.getElementById('tenantId').value;
+
+      socket = io('http://localhost:3001', {
+        query: { userId, tenantId },
+      });
+
+      socket.on('connect', () => log(`Socket Connected as user ${userId} — socket: ${socket.id}`, 'sent'));
+      socket.on('disconnect', () => log('Disconnected', 'system'));
+
+      // fired when a new message is sent to a room you joined
+      socket.on('new_message', (data) => {
+        log(`new_message → ${JSON.stringify(data)}`, 'received');
+      });
+
+      // fired when you receive a notification (you are online but not in the room view)
+      socket.on('notification', (data) => {
+        log(`notification → ${JSON.stringify(data)}`, 'received');
+      });
+    }
+
+    function disconnect() {
+      socket?.disconnect();
+    }
+
+    function joinRoom() {
+      const roomId = Number(document.getElementById('roomId').value);
+      socket.emit('join_room', { roomId }, (res) => {
+        log(`join_room ack → ${JSON.stringify(res)}`, 'sent');
+      });
+    }
+
+    function leaveRoom() {
+      const roomId = Number(document.getElementById('roomId').value);
+      socket.emit('leave_room', { roomId }, (res) => {
+        log(`leave_room ack → ${JSON.stringify(res)}`, 'sent');
+      });
+    }
+  </script>
+</body>
+</html>
