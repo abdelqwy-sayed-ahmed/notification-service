@@ -6,7 +6,6 @@ import { MessageSentPayload } from '../common/events/message.events';
 
 @Injectable()
 export class GatewayService implements OnModuleInit {
-  private readonly logger = new Logger(GatewayService.name);
 
   constructor(
     private readonly rabbitMQ: RabbitMQService,
@@ -19,7 +18,7 @@ export class GatewayService implements OnModuleInit {
     this.rabbitMQ.registerHandler(this.handleMessageSent.bind(this));
   }
 
-  // ─── handle message.sent ──────────────────────────────────────────────────────
+  // handle message.sent 
 
   private async handleMessageSent(payload: MessageSentPayload) {
     console.debug(
@@ -57,7 +56,7 @@ export class GatewayService implements OnModuleInit {
 
     const offlineCount = payload.recipientIds.length - onlineRecipients.length;
     if (offlineCount > 0) {
-      // Step 9 will handle offline recipients
+      //  will handle offline recipients later
       console.debug(`${offlineCount} recipient(s) offline — will handle in Step 9`);
     }
   }

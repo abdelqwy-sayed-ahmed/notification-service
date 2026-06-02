@@ -14,7 +14,7 @@ import { RedisService } from '../redis/redis.service';
 import { createAdapter } from '@socket.io/redis-adapter';
 
 @WebSocketGateway({
-  cors: { origin: '*' }, // tighten this in production
+  cors: { origin: '*' }, 
   namespace: '/',
 })
 export class NotificationGateway
@@ -36,11 +36,10 @@ export class NotificationGateway
     );
     console.log('Socket.io Redis adapter attached');
   }
-  // ─── connection ───────────────────────────────────────────────────────────────
+  // connection
 
   async handleConnection(client: Socket) {
     // For now we read userId and tenantId from handshake query
-    // In Step 10 we'll replace this with JWT auth
     const userId = Number(client.handshake.query.userId);
     const tenantId = client.handshake.query.tenantId as string;
 
@@ -62,7 +61,7 @@ export class NotificationGateway
     );
   }
 
-  // ─── disconnection ────────────────────────────────────────────────────────────
+  // disconnection
 
   async handleDisconnect(client: Socket) {
     const { userId, tenantId } = client.data;
@@ -72,7 +71,7 @@ export class NotificationGateway
     }
   }
 
-  // ─── join room ────────────────────────────────────────────────────────────────
+  // join room 
 
   @SubscribeMessage('join_room')
   async handleJoinRoom(
@@ -87,7 +86,7 @@ export class NotificationGateway
     return { success: true };
   }
 
-  // ─── leave room ───────────────────────────────────────────────────────────────
+  // leave room 
 
   @SubscribeMessage('leave_room')
   async handleLeaveRoom(
@@ -100,7 +99,7 @@ export class NotificationGateway
     return { success: true };
   }
 
-  // ─── emit helpers (called by GatewayService) ──────────────────────────────────
+  //  emit helpers (called by GatewayService) 
 
   emitToRoom(tenantId: string, roomId: number, event: string, data: unknown) {
     const roomChannel = `room:${tenantId}:${roomId}`;
