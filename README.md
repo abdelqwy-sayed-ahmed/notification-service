@@ -17,4 +17,5 @@
 6- Checks Redis → who is online among recipientIds?
     
 7-1-Emits "new_message" to the room channel  -->  everyone in the room view gets this
+
 7-2-Emits "notification" to each online socket --> for users not currently in the room view
